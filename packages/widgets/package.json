@@ -31,7 +31,8 @@
     "test": "vitest run --config ../../vitest.config.ts"
   },
   "dependencies": {
-    "@termuijs/core": "workspace:*"
+    "@termuijs/core": "workspace:*",
+    "@termuijs/motion": "workspace:*"
   },
   "devDependencies": {
     "typescript": "^5.7.0",

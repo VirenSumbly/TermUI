@@ -18,6 +18,8 @@ export { JSONView, jsonToTree } from './display/JSONView.js';
 export type { JSONViewOptions, JSONNodeData, JSONNodeType } from './display/JSONView.js';
 export { DiffView } from './display/DiffView.js';
 export type { DiffLine, DiffViewOptions } from './display/DiffView.js';
+export { StreamingText } from './display/StreamingText.js';
+export type { StreamingTextOptions } from './display/StreamingText.js';
 
 // ── Input Widgets ─────────────────────────────────────
 export { List } from './input/List.js';

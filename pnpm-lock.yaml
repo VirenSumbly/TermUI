@@ -302,6 +302,9 @@ importers:
       '@termuijs/core':
         specifier: workspace:*
         version: link:../core
+      '@termuijs/motion':
+        specifier: workspace:*
+        version: link:../motion
     devDependencies:
       tsup:
         specifier: ^8.3.0
