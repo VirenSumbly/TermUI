@@ -208,3 +208,6 @@ export type { DisclosureOptions } from './Disclosure.js';
 
 export { Listbar } from './Listbar.js';
 export type { ListbarOptions, ListbarItem } from './Listbar.js';
+
+export { validateInput } from './validation.js';
+export type { InputValidator } from './validation.js';
