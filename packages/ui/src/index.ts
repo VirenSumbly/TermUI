@@ -166,7 +166,6 @@ export type { BasicAuthCredentials, BasicAuthPromptOptions } from './BasicAuthPr
 export { TextArea } from './TextArea.js';
 export type { TextAreaOptions } from './TextArea.js';
 
-
 export { Stepper } from './Stepper.js';
 export type { StepperOptions } from './Stepper.js';
 

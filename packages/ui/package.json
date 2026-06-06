@@ -32,13 +32,13 @@
     "@standard-schema/spec": "^1.1.0",
     "@termuijs/core": "workspace:*",
     "@termuijs/jsx": "workspace:*",
-    "@termuijs/widgets": "workspace:*",
-    "zod": "^4.4.3"
+    "@termuijs/widgets": "workspace:*"
   },
   "devDependencies": {
     "@termuijs/testing": "workspace:*",
     "tsup": "^8.0.0",
-    "typescript": "^5.4.0"
+    "typescript": "^5.4.0",
+     "zod": "^4.4.3"
   },
   "keywords": [
     "terminal",
