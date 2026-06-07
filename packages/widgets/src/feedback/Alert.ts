@@ -2,7 +2,7 @@
 // @termuijs/widgets — Alert widget
 // ─────────────────────────────────────────────────────
 
-import { type Screen, type Style, type Color, styleToCellAttrs, getBorderChars, caps } from '@termuijs/core';
+import { type Screen, type Style, type Color, styleToCellAttrs, getBorderChars, caps, stringWidth } from '@termuijs/core';
 import { Widget } from '../base/Widget.js';
 import { type StatusVariant } from './StatusMessage.js';
 
@@ -134,7 +134,7 @@ export class Alert extends Widget {
         const icon = iconMap[this._variant];
 
         // Render icon in variant color, bold
-        const iconLen = icon.length;
+        const iconLen = stringWidth(icon);
         screen.writeString(cx, cy, icon.slice(0, contentWidth), {
             ...attrs,
             fg: color,
