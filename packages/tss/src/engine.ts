@@ -6,6 +6,7 @@ import { tokenize } from './tokenizer.js';
 import { parse, type TSSStylesheet, type TSSRule, type TSSSelector, type TSSValue } from './parser.js';
 import { type Style, type Color, type BorderStyle, parseColor } from '@termuijs/core';
 import { evalCalc } from './calc.js';
+import { matchesPseudo } from './pseudo.js';
 
 export function compile(source: string): string {
     const tokens = tokenize(source);
@@ -208,9 +209,11 @@ export class ThemeEngine {
     }
 
     private _matchesSelector(sel: TSSSelector, widgetType: string, className?: string, pseudo?: string): boolean {
+        // Widget type match (* = universal)
         if (sel.widget !== '*' && sel.widget.toLowerCase() !== widgetType.toLowerCase()) return false;
+        // Class name match
         if (sel.className && sel.className !== className) return false;
-        if (sel.pseudo && sel.pseudo !== pseudo) return false;
+        if (!matchesPseudo(sel.pseudo, pseudo)) return false;
         return true;
     }
 
