@@ -5,11 +5,6 @@
 // components for building beautiful CLI apps.
 // ─────────────────────────────────────────────────────
 
-import { BasicAuthPrompt } from './BasicAuthPrompt.js';
-
-// ── Re-exports from @termuijs/widgets (base components) ──
-// Note: do not augment '@termuijs/widgets' here — it resolves to an untyped module.
-
 // ── Re-exports from @termuijs/widgets (base components) ──
 // Note: do not augment '@termuijs/widgets' here — it resolves to an untyped module.
 
@@ -38,7 +33,10 @@ export { Tabs } from './Tabs.js';
 export type { Tab, TabsOptions } from './Tabs.js';
 
 export { MenuBar } from './MenuBar.js';
-export type { MenuBarOptions, MenuBarItem, MenuItem } from './MenuBar.js';
+export type { MenuBarOptions, MenuBarItem, MenuItem as MenuBarItemType } from './MenuBar.js';
+
+export { Menu } from './Menu.js';
+export type { MenuItem, MenuOptions } from './Menu.js';
 
 export { Carousel } from './Carousel.js';
 export type { CarouselOptions } from './Carousel.js';
@@ -162,8 +160,8 @@ export { Wizard } from './Wizard.js';
 export type { WizardStep, WizardOptions } from './Wizard.js';
 export { MultilineTextInput } from './MultilineTextInput.js';
 export type { MultilineTextInputOptions } from './MultilineTextInput.js';
-export {BasicAuthPrompt} from './BasicAuthPrompt.js';
-export type {BasicAuthCredentials,BasicAuthPromptOptions} from './BasicAuthPrompt.js'
+export { BasicAuthPrompt } from './BasicAuthPrompt.js';
+export type { BasicAuthCredentials, BasicAuthPromptOptions } from './BasicAuthPrompt.js';
 
 export { TextArea } from './TextArea.js';
 export type { TextAreaOptions } from './TextArea.js';

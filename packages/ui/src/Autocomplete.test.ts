@@ -3,7 +3,7 @@
 // ─────────────────────────────────────────────────────
 
 import { describe, it, expect, vi, afterEach } from 'vitest';
-import { Screen, caps } from '@termuijs/core';
+import { Screen, caps, type KeyEvent } from '@termuijs/core';
 import { Autocomplete } from './Autocomplete.js';
 import { Screen, caps, type KeyEvent } from '@termuijs/core';
 
@@ -439,11 +439,11 @@ describe('Autocomplete — rendering displays query', () => {
         widget.handleKey(makeKey('h'));
         widget.handleKey(makeKey('i'));
 
-        const screen = new Screen(40, 5);
+        const screenInstance = new Screen(40, 5);
         widget.updateRect({ x: 0, y: 0, width: 40, height: 5 });
-        widget.render(screen);
+        widget.render(screenInstance);
 
-        const row0 = screen.back[0].map((c: { char: string }) => c.char).join('');
+        const row0 = screenInstance.back[0].map((c: { char: string }) => c.char).join('');
         expect(row0).toContain('h');
         expect(row0).toContain('i');
     });
@@ -455,11 +455,11 @@ describe('Autocomplete — rendering displays query', () => {
         widget.handleKey(makeKey('o'));
         widget.handleKey(makeKey('o'));
 
-        const screen = new Screen(40, 5);
+        const screenInstance = new Screen(40, 5);
         widget.updateRect({ x: 0, y: 0, width: 40, height: 5 });
-        widget.render(screen);
+        widget.render(screenInstance);
 
-        const row0 = screen.back[0].map((c: { char: string }) => c.char).join('');
+        const row0 = screenInstance.back[0].map((c: { char: string }) => c.char).join('');
         expect(row0).toContain('foo');
     });
 });
@@ -471,20 +471,20 @@ describe('Autocomplete — rendering displays query', () => {
 describe('Autocomplete — rendering with empty query', () => {
     it('renders successfully without throwing on construction', () => {
         const widget = new Autocomplete();
-        const screen = new Screen(40, 5);
+        const screenInstance = new Screen(40, 5);
 
         widget.updateRect({ x: 0, y: 0, width: 40, height: 5 });
-        expect(() => widget.render(screen)).not.toThrow();
+        expect(() => widget.render(screenInstance)).not.toThrow();
     });
 
     it('displays a pointer character when query is empty', () => {
         const widget = new Autocomplete();
-        const screen = new Screen(40, 5);
+        const screenInstance = new Screen(40, 5);
 
         widget.updateRect({ x: 0, y: 0, width: 40, height: 5 });
-        widget.render(screen);
+        widget.render(screenInstance);
 
-        const row0 = screen.back[0].map((c: { char: string }) => c.char).join('');
+        const row0 = screenInstance.back[0].map((c: { char: string }) => c.char).join('');
         // pointer is either '➔' (unicode) or '>' (ASCII)
         expect(row0).toMatch(/[➔>]/);
     });
@@ -503,11 +503,11 @@ describe('Autocomplete — unicode and ASCII pointer rendering', () => {
         vi.spyOn(caps, 'unicode', 'get').mockReturnValue(true);
 
         const widget = new Autocomplete();
-        const screen = new Screen(40, 5);
+        const screenInstance = new Screen(40, 5);
         widget.updateRect({ x: 0, y: 0, width: 40, height: 5 });
-        widget.render(screen);
+        widget.render(screenInstance);
 
-        const row0 = screen.back[0].map((c: { char: string }) => c.char).join('');
+        const row0 = screenInstance.back[0].map((c: { char: string }) => c.char).join('');
         expect(row0).toContain('➔');
     });
 
@@ -515,11 +515,11 @@ describe('Autocomplete — unicode and ASCII pointer rendering', () => {
         vi.spyOn(caps, 'unicode', 'get').mockReturnValue(false);
 
         const widget = new Autocomplete();
-        const screen = new Screen(40, 5);
+        const screenInstance = new Screen(40, 5);
         widget.updateRect({ x: 0, y: 0, width: 40, height: 5 });
-        widget.render(screen);
+        widget.render(screenInstance);
 
-        const row0 = screen.back[0].map((c: { char: string }) => c.char).join('');
+        const row0 = screenInstance.back[0].map((c: { char: string }) => c.char).join('');
         expect(row0).toContain('>');
         expect(row0).not.toContain('➔');
     });
