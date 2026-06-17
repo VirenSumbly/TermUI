@@ -1,12 +1,12 @@
 import { createRequire } from 'node:module'
-import type open from 'open'
+
 
 export interface UseOpenResult {
   open: (target: string) => Promise<void>
   lastOpened: string | null
 }
 
-type OpenFunction = typeof open
+type OpenFunction = (target: string) => Promise<unknown>
 
 function isMissingOpenError(error: unknown): error is NodeJS.ErrnoException {
   return error instanceof Error
