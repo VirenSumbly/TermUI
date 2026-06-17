@@ -6,6 +6,7 @@ const mockOpen = vi.fn()
 function createMissingOpenRequire(): NodeJS.Require {
   const missingRequire = Object.assign(
     (specifier: string) => {
+      // Cast to ErrnoException so the test can assign a MODULE_NOT_FOUND code.
       const error = new Error(
         `Cannot find module '${specifier}'`
       ) as NodeJS.ErrnoException
@@ -21,7 +22,7 @@ function createMissingOpenRequire(): NodeJS.Require {
       main: undefined,
     }
   )
-
+  // Cast because the stub only implements the subset of NodeJS.Require used by the test.
   return missingRequire as NodeJS.Require
 }
 
@@ -31,7 +32,7 @@ function createOpenRequire(): NodeJS.Require {
       if (specifier === 'open') {
         return { default: mockOpen }
       }
-
+      // Cast to ErrnoException so the test can assign a MODULE_NOT_FOUND code.
       const error = new Error(
         `Cannot find module '${specifier}'`
       ) as NodeJS.ErrnoException
@@ -47,7 +48,7 @@ function createOpenRequire(): NodeJS.Require {
       main: undefined,
     }
   )
-
+  // Cast because the stub only implements the subset of NodeJS.Require used by the test.
   return requireFn as NodeJS.Require
 }
 

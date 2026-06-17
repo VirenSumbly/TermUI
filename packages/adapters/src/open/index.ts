@@ -18,7 +18,8 @@ function isMissingOpenError(error: unknown): error is NodeJS.ErrnoException {
 function resolveOpen(): OpenFunction {
   try {
     const require = createRequire(import.meta.url)
-
+    // open may be exposed as either a CommonJS export or an ESM default export.
+    // This assertion allows handling both module shapes.
     const loaded = require('open') as OpenFunction | { default: OpenFunction }
 
     return 'default' in loaded ? loaded.default : loaded
