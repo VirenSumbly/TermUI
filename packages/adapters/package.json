@@ -92,7 +92,7 @@
     "execa": {
       "optional": true
     },
-    "open":{
+    "open": {
       "optional": true
     }
   },

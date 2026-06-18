@@ -1,6 +1,5 @@
 import { createRequire } from 'node:module'
 
-
 export interface UseOpenResult {
   open: (target: string) => Promise<void>
   lastOpened: string | null
