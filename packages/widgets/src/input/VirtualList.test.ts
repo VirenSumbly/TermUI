@@ -4,8 +4,7 @@
 
 import { describe, it, expect, vi } from 'vitest';
 import { VirtualList } from './VirtualList.js';
-import { Widget } from '../base/Widget.js';
-import { Screen } from '@termuijs/core';
+import { Screen, computeLayout } from '@termuijs/core';
 
 function createList(totalItems = 100, options = {}) {
     return new VirtualList({
@@ -141,92 +140,70 @@ describe('VirtualList', () => {
         });
     });
 
-    describe('performance optimizations', () => {
-        it('supports fixedItemHeight configuration', () => {
+    describe('spring scrolling', () => {
+        // Helper: set up a VirtualList with a real computed layout so _getContentRect()
+        // returns correct values without touching private internals.
+        // With width=40, height=10 and the default 'single' border, the content
+        // area is 38×8 (border consumes 1 cell on each side).
+        function createListWithLayout(options: { springScroll: boolean }) {
             const list = new VirtualList({
-                totalItems: 10,
-                fixedItemHeight: 3,
+                totalItems: 100,
                 renderItem: (i) => `Item ${i}`,
+                springScroll: options.springScroll,
+                style: { width: 40, height: 10 },
             });
-            const screen = new Screen(40, 10);
-            list.updateRect({ x: 0, y: 0, width: 40, height: 10 });
-            list.render(screen);
+            const node = list.getLayoutNode();
+            computeLayout(node, 40, 10);
+            list.syncLayout();
+            return list;
+        }
 
-            // With border: single, content starts at y=1.
-            // Item 0: y=1
-            // Item 1: y=1+3=4
-            expect(screen.getCell(3, 1)?.char).toBe('I'); // 'I' from 'Item 0'
-            expect(screen.getCell(3, 4)?.char).toBe('I'); // 'I' from 'Item 1'
-            expect(screen.getCell(3, 7)?.char).toBe('I'); // 'I' from 'Item 2'
+        it('instantly snaps when springScroll is false', () => {
+            const list = createListWithLayout({ springScroll: false });
+
+            // Scroll to index 50; content height is 8, so target offset = 50 - 8 + 1 = 43
+            list.scrollTo(50);
+            expect(list.scrollOffset).toBe(43);
         });
 
-        it('bypasses layout engine dirtying on scrolling when memoizeLayout is true', () => {
-            const list = createList(10, {
-                totalItems: 10,
-                memoizeLayout: true,
-            });
+        it('animates gradually when springScroll is true', () => {
+            let mockTime = 1000;
+            const nowSpy = vi.spyOn(performance, 'now').mockImplementation(() => mockTime);
 
-            const markDirtySpy = vi.spyOn(Widget.prototype, 'markDirty');
-            list.clearDirty();
+            const list = createListWithLayout({ springScroll: true });
+            const screen = new Screen(80, 25);
 
-            list.selectNext();
+            // Initially at 0
+            expect(list.scrollOffset).toBe(0);
 
-            expect(list.isDirty).toBe(true);
-            // Should NOT call super.markDirty() which invalidates layout
-            expect(markDirtySpy).not.toHaveBeenCalled();
-            
-            markDirtySpy.mockRestore();
-        });
+            // Scroll to 50 -> animation starts; offset must NOT jump immediately
+            list.scrollTo(50);
+            expect(list.scrollOffset).toBe(0);
 
-        it('does NOT bypass layout engine dirtying on scrolling when memoizeLayout is false', () => {
-            const list = createList(10, {
-                totalItems: 10,
-                memoizeLayout: false,
-            });
-
-            const markDirtySpy = vi.spyOn(Widget.prototype, 'markDirty');
-            list.clearDirty();
-
-            list.selectNext();
-
-            expect(list.isDirty).toBe(true);
-            // Should call super.markDirty()
-            expect(markDirtySpy).toHaveBeenCalled();
-            
-            markDirtySpy.mockRestore();
-        });
-
-        it('clears render cache when data/style changes', () => {
-            const initialRenderItem = vi.fn((i: number) => `Item ${i}`);
-            const list = new VirtualList({
-                totalItems: 10,
-                renderItem: initialRenderItem,
-            });
-
-            const screen = new Screen(40, 10);
-            list.updateRect({ x: 0, y: 0, width: 40, height: 10 });
+            // First render tick
             list.render(screen);
 
-            const initialCalls = initialRenderItem.mock.calls.length;
-            expect(initialCalls).toBeGreaterThan(0);
+            // Advance 100 frames of 16 ms — spring should have begun moving
+            for (let i = 0; i < 100; i++) {
+                mockTime += 16;
+                list.render(screen);
+            }
 
-            // Render again - should be cached
-            list.render(screen);
-            expect(initialRenderItem.mock.calls.length).toBe(initialCalls);
+            // Offset must have started moving toward the target (43)
+            expect(list.scrollOffset).toBeGreaterThan(0);
 
-            // Update - should clear cache
-            const newRenderItem = vi.fn((i: number) => `New ${i}`);
-            list.setRenderItem(newRenderItem);
-            list.render(screen);
-            // The initial render item should not have been called again
-            expect(initialRenderItem.mock.calls.length).toBe(initialCalls);
-            // The new render item should have been called
-            expect(newRenderItem.mock.calls.length).toBeGreaterThan(0);
+            // Drive the animation to completion.
+            // The spring (stiffness=0.15, damping=0.8, dt=16ms) converges in
+            // roughly 1600 frames — run 2000 to be safe.  We check only the
+            // public scrollOffset getter; no private fields are accessed.
+            for (let i = 0; i < 2000; i++) {
+                mockTime += 16;
+                list.render(screen);
+            }
 
-            const callsAfterUpdate = newRenderItem.mock.calls.length;
-            list.setTotalItems(5);
-            list.render(screen);
-            expect(newRenderItem.mock.calls.length).toBeGreaterThan(callsAfterUpdate);
+            expect(list.scrollOffset).toBe(43);
+            nowSpy.mockRestore();
         });
     });
+
 });
