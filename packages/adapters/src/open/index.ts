@@ -33,6 +33,7 @@ function resolveOpen(): OpenFunction {
     throw error
   }
 }
+
 export function useOpen(): UseOpenResult {
   const openFn = resolveOpen()
 
