@@ -12,6 +12,7 @@ import {
     stringWidth,
     mergeStyles,
     defaultStyle,
+    caps,
 } from '@termuijs/core';
 import { Widget } from '@termuijs/widgets';
 
@@ -93,12 +94,15 @@ export class SetupFlow extends Widget {
 
         // ── Step progress indicator ────────────────────
         if (row < y + height && this._steps.length > 0) {
+            const done = caps.unicode ? '✓' : 'v';
+            const curr = caps.unicode ? '►' : '>';
+            const sep  = caps.unicode ? '│' : '|';
             const parts = this._steps.map((s, i) => {
-                if (i < this._currentIndex) return `✓ ${s.title}`;
-                if (i === this._currentIndex) return `► ${s.title}`;
+                if (i < this._currentIndex) return `${done} ${s.title}`;
+                if (i === this._currentIndex) return `${curr} ${s.title}`;
                 return `  ${s.title}`;
             });
-            const progress = parts.join('  │  ');
+            const progress = parts.join(`  ${sep}  `);
             screen.writeString(x, row, truncate(progress, width), {
                 ...attrs,
                 dim: false,
@@ -109,7 +113,7 @@ export class SetupFlow extends Widget {
 
         // ── Divider ───────────────────────────────────
         if (row < y + height) {
-            screen.writeString(x, row, '─'.repeat(width), { ...attrs, dim: true });
+            screen.writeString(x, row, (caps.unicode ? '─' : '-').repeat(width), { ...attrs, dim: true });
             row++;
         }
 
@@ -124,7 +128,7 @@ export class SetupFlow extends Widget {
                 }
             }
         } else if (this._complete) {
-            const msg = '✓ Setup complete!';
+            const msg = `${caps.unicode ? '✓' : 'v'} Setup complete!`;
             const msgX = x + Math.max(0, Math.floor((width - stringWidth(msg)) / 2));
             screen.writeString(msgX, row + 2, msg, { ...attrs, bold: true });
         }
@@ -134,7 +138,7 @@ export class SetupFlow extends Widget {
         if (hintRow > row) {
             const hint = this._complete
                 ? '[Enter] Continue'
-                : '[Enter] Next  [Esc] Cancel  [←] Back';
+                : `[Enter] Next  [Esc] Cancel  [${caps.unicode ? '←' : '<'}] Back`;
             screen.writeString(x, hintRow, truncate(hint, width), { ...attrs, dim: true });
         }
     }
