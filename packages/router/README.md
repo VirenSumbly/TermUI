@@ -277,7 +277,6 @@ const router = new Router(options)
 router.addRoute('/', HomeScreen)
 router.addRoute('/settings', SettingsScreen)
 
-const routes: Route[] = router.routes
 
 router.push('/settings')
 ```
