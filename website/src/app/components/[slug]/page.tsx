@@ -19,6 +19,10 @@ interface RegistryEntry {
     category: string
     description: string
     tags: string[]
+    api: {
+        signature: string
+        props: Array<{ name: string; type: string; required: boolean; description: string }>
+    } | null
 }
 
 const registry = rawRegistry as RegistryEntry[]
@@ -227,6 +231,19 @@ export default async function ComponentDetailPage({
     const cliDeps = source?.dependencies ?? [comp.package]
     const apiProps  = API_PROPS[comp.category] ?? API_PROPS.display
 
+    const hasApi = comp.api != null && comp.api.props.length > 0
+    const apiColumns = hasApi
+        ? ['Prop', 'Type', 'Required', 'Description']
+        : ['Prop', 'Type', 'Default', 'Description']
+    const apiRows = hasApi
+        ? comp.api!.props.map((p) => [
+              p.name,
+              p.type,
+              p.required ? 'required' : 'optional',
+              p.description || '—',
+          ])
+        : apiProps
+
     return (
         <div className="cd-page">
             {/* Breadcrumb */}
@@ -355,8 +372,8 @@ export default async function ComponentDetailPage({
                     <section className="cd-section" id="usage">
                         <h2 className="cd-section-heading">Usage</h2>
                         <Code code={importLine} lang="ts" />
-                        <CodeCollapsible collapsed={isLong(usageSnip)}>
-                            <Code code={usageSnip} lang="tsx" />
+                        <CodeCollapsible collapsed={isLong(comp.api?.signature ?? usageSnip)}>
+                            <Code code={comp.api?.signature ?? usageSnip} lang="ts" />
                         </CodeCollapsible>
                     </section>
 
@@ -365,8 +382,8 @@ export default async function ComponentDetailPage({
                         <h2 className="cd-section-heading">API Reference</h2>
                         <h3 className="cd-api-subheading">{comp.name}</h3>
                         <ApiTable
-                            columns={['Prop', 'Type', 'Default', 'Description']}
-                            rows={apiProps}
+                            columns={apiColumns}
+                            rows={apiRows}
                         />
                     </section>
 
