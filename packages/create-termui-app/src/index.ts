@@ -8,7 +8,7 @@ import { mkdirSync, writeFileSync, existsSync, readFileSync } from 'node:fs';
 import { getBuiltinThemeNames } from '@termuijs/tss';
 import { textPrompt, selectPrompt, multiSelectPrompt } from './prompts.js';
 import { generateProject, type ProjectConfig } from './templates.js';
-import { parseArgs, isNonInteractive, type CliArgs } from './args.js';
+import { parseArgs, isNonInteractive, TEMPLATE_KEYS, type CliArgs } from './args.js';
 import { runAddCommand } from './commands/add.js';
 import { validateProjectName, validateResolvedPath } from "./validate.js";
 
@@ -32,16 +32,6 @@ const packageVersion = JSON.parse(
   ),
 ).version as string;
 
-const TEMPLATE_KEYS = [
-  'empty',
-  'dashboard',
-  'interactive-tool',
-  'cli-wrapper',
-  'cli-tool',
-  'file-manager',
-  'ai-assistant',
-  'form-wizard',
-] as const;
 const FEATURES = ['Screen Router', 'Data Providers', 'Hot Reload'];
 
 export async function runCli(argv: string[]): Promise<void> {
